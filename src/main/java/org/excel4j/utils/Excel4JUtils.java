@@ -104,7 +104,7 @@ public final class Excel4JUtils
 	 */
 	public ExcelRow findRowInSheetByParameters (Map<String,String> parameters,String sheet)
 	{
-		return getCollectionFistElement(findRowsInSheetByParameters(parameters, sheet),ExcelRow.NULL_ROW());
+		return org.excel4j.utils.Iterables.fistItemOrDefault(findRowsInSheetByParameters(parameters, sheet),ExcelRow.NULL_ROW());
 	}
 
 	/**
@@ -117,20 +117,9 @@ public final class Excel4JUtils
 	 */
 	public <T extends RowAdapter> T findRowInSheetByParameters(Map<String,String> parameters,String sheet,Class<T> clazz)
 	{
-		return getCollectionFistElement(findRowsInSheetByParameters(parameters, sheet, clazz), null);
+		return org.excel4j.utils.Iterables.fistItemOrDefault(findRowsInSheetByParameters(parameters, sheet, clazz), null);
 	}
 	
-	/**
-	 * 
-	 * @param <T>
-	 * @param collection
-	 * @param def
-	 * @return
-	 */
-	private <T> T getCollectionFistElement(Iterable<T> collection,T def)
-	{
-		return collection.iterator().hasNext() ? collection.iterator().next() : def;
-	}
 	
 	/**
 	 * 

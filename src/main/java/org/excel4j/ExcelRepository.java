@@ -1,10 +1,9 @@
 package org.excel4j;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.lang.Validate;
+import org.excel4j.utils.Iterables;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.inject.Singleton;
@@ -35,16 +34,13 @@ public class ExcelRepository
 		}
 	}
 	
-	public Collection<ExcelSheet> getSheets(String sheetname)
-	{
+	public Iterable<ExcelSheet> getSheets(String sheetname){
 		Validate.notNull(sheetname,"");
 		return data.get(sheetname);
 	}
 	
 	public ExcelSheet getSheet(String sheetname){
-		List<ExcelSheet> _sheets = data.get(sheetname);
-		return _sheets.isEmpty() ? 
-				ExcelSheet.NULL_SHEET() : _sheets.iterator().next() ;
+		return Iterables.fistItemOrDefault(data.get(sheetname), ExcelSheet.NULL_SHEET());
 	}
 
 }
