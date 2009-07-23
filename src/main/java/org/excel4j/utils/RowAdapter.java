@@ -1,6 +1,5 @@
 package org.excel4j.utils;
 
-import org.apache.commons.lang.Validate;
 import org.excel4j.ExcelRow;
 
 public abstract class RowAdapter {
@@ -8,25 +7,12 @@ public abstract class RowAdapter {
 	public RowAdapter(ExcelRow row) {
 		super();
 	}
-	
 
-	private ExcelRow row;
 	/**
 	 * @return the row
 	 */
-	public ExcelRow getRow() {
-		return row;
-	}
-	/**
-	 * Guarda la fila de excel que se esta adaptando a la aplicacion
-	 * 
-	 * @param {@see {@link ExcelRow}} fila de Excel 
-	 * @exception IllegalArgumentException si el parametro Row es null
-	 */
-	protected void setRow(ExcelRow row) {
-		Validate.notNull(row,"La fila excel no puede ser null");
-		this.row = row;
-	}
+	public abstract ExcelRow getRow();
+
 	
 	/**
 	 * Devuelve la columna con el nombre 
@@ -34,8 +20,12 @@ public abstract class RowAdapter {
 	 * 
 	 * @param string
 	 * @return
+	 * @throws {@link IllegalStateException} if getRow() == null
 	 */
 	public String getColumn(String string) {
+		if (getRow() == null){
+			throw new IllegalStateException("An excel row was not set");
+		}
 		return getRow().getColumn(string);
 	}
 }

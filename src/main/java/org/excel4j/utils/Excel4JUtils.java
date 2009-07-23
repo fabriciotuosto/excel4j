@@ -1,12 +1,13 @@
 package org.excel4j.utils;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.Validate;
 import org.excel4j.ExcelRepository;
 import org.excel4j.ExcelRow;
-import org.excel4j.nulls.NullExcelRow;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -25,7 +26,41 @@ public final class Excel4JUtils
 	{
 		repository = repo;
 	}
-
+	
+	public void add(String filepath){
+		Validate.notNull(filepath,"El Path no puede ser null");
+		File file = new File(filepath);
+		Validate.isTrue(file.exists(),"El path no existe");
+		if (file.isDirectory())
+		{
+			addDir(file);
+		}else{
+			loadExcels(file);
+		}
+	}
+	
+	private void addDir(File dir)
+	{
+		Validate.notNull(dir,"El Path no puede ser null");
+		Validate.isTrue(dir.exists(),"El path no existe");
+		Validate.isTrue(dir.isDirectory(),"El path no es un directorio");
+		for (File file : dir.listFiles()){
+			loadExcels(file);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param paths
+	 */
+	public void loadExcels(File... paths)
+	{
+		for (File path : paths)
+		{
+				repository.add(path);
+		}
+	}	
+	
 	/**
 	 * 
 	 * @param paths
@@ -47,15 +82,7 @@ public final class Excel4JUtils
 	 */
 	public List<ExcelRow> findRowsInSheetByParameters (final Map<String,String> parameters,String sheet)
 	{
-		return Lists.newArrayList(Iterables.filter(repository.getSheet(sheet), new Predicate<ExcelRow>(){
-			public boolean apply(ExcelRow input) {
-				boolean isValid = true;
-				for(Entry<String,String> column : parameters.entrySet())
-				{
-					isValid = isValid && column.getValue().equalsIgnoreCase(input.getColumn(column.getKey()));
-				}
-				return isValid;
-			}}));
+		return Lists.newArrayList(Iterables.filter(repository.getSheet(sheet), new ValidateRow(parameters)));
 	}
 	
 	
@@ -67,16 +94,7 @@ public final class Excel4JUtils
 	 */
 	public <T extends RowAdapter> List<T> findRowsInSheetByParameters (Map<String,String> parameters,String sheet,final Class<T> clazz)
 	{
-		return Lists.transform(findRowsInSheetByParameters(parameters, sheet), new Function<ExcelRow, T>() {
-						public T apply(ExcelRow arg0) {
-							try {
-								return clazz.getConstructor(ExcelRow.class).newInstance(arg0);
-							} catch (Exception e) {
-								throw new Error(e);
-							}
-						}
-			}
-		);
+		return Lists.transform(findRowsInSheetByParameters(parameters, sheet), new AdaptExcelRow<T>(clazz));
 	}
 	/**
 	 * 
@@ -86,7 +104,7 @@ public final class Excel4JUtils
 	 */
 	public ExcelRow findRowInSheetByParameters (Map<String,String> parameters,String sheet)
 	{
-		return getCollectionFistElement(findRowsInSheetByParameters(parameters, sheet),NullExcelRow.getInstance());
+		return getCollectionFistElement(findRowsInSheetByParameters(parameters, sheet),ExcelRow.NULL_ROW());
 	}
 
 	/**
@@ -111,8 +129,56 @@ public final class Excel4JUtils
 	 */
 	private <T> T getCollectionFistElement(Iterable<T> collection,T def)
 	{
-		T result = Iterables.get(collection, 0);
-		return result == null ? def : result;
+		return collection.iterator().hasNext() ? collection.iterator().next() : def;
 	}
 	
+	/**
+	 * 
+	 * @author tuosto
+	 *
+	 */
+	private static class ValidateRow implements Predicate<ExcelRow>{
+		private final Map<String,String> parameters;
+		
+		public ValidateRow(Map<String, String> parameters) {
+			this.parameters = parameters;
+		}
+
+		/**
+		 * 
+		 */
+		public boolean apply(ExcelRow input) {
+			boolean isValid = true;
+			for(Entry<String,String> column : parameters.entrySet())
+			{
+				isValid = isValid && column.getValue().equalsIgnoreCase(input.getColumn(column.getKey()));
+			}
+			return isValid;
+		}
+	}
+	
+	/**
+	 * 
+	 * @author tuosto
+	 *
+	 * @param <T>
+	 */
+	private static class AdaptExcelRow<T> implements Function<ExcelRow, T>{
+		
+		private final Class<T> clazz;
+		public AdaptExcelRow(Class<T> clazz) {
+			this.clazz = clazz;
+		}
+		
+		/**
+		 * 
+		 */
+		public T apply(ExcelRow arg0) {
+			try {
+				return clazz.getConstructor(ExcelRow.class).newInstance(arg0);
+			} catch (Exception e) {
+				throw new Error(e);
+			}
+		}
+	}
 }

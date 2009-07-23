@@ -40,46 +40,7 @@
 	   </repository>			
 	</distributionManagement>
 	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.groovy.maven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generateStubs</goal>
-							<goal>compile</goal>
-							<goal>generateTestStubs</goal>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.groovy.maven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<fileset>
-									<directory>${pom.basedir}/src/main/groovy</directory>
-									<includes>
-										<include>**/*.groovy</include>
-									</includes>
-								</fileset>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -94,7 +55,7 @@
 		<dependency>
 			<groupId>com.google.collections</groupId>
 			<artifactId>google-collections</artifactId>
-			<version>1.0-rc1</version>
+			<version>1.0-rc2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.guice</groupId>
