@@ -6,7 +6,6 @@ import java.util.Iterator;
 import jxl.Sheet;
 
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.math.NumberRange;
 import org.excel4j.iterators.ColumnIterable;
 import org.excel4j.iterators.RowIterable;
 
@@ -15,17 +14,16 @@ public class ExcelSheet implements Iterable<ExcelRow>
 	private final Sheet mySheet ;
 	private final Iterable<ExcelRow> rows;
 	private final Iterable<ExcelColumn> columns;
-	private final NumberRange validRows;
-	private final NumberRange validColumns;
-	
+	private final int maxRows;
+	private final int maxColumns;
 	
 	public ExcelSheet(Sheet sheet){
 		Validate.notNull(sheet);
-		mySheet      = sheet;
-		validRows    = new NumberRange(0,mySheet.getRows());
-		validColumns = new NumberRange(0,mySheet.getColumns());		
+		mySheet      = sheet;		
 		rows         = new RowIterable(mySheet);
 		columns      = new ColumnIterable(mySheet);
+		maxRows      = mySheet.getRows();
+		maxColumns   = mySheet.getColumns();
 	}
 	
 	/**
@@ -35,8 +33,8 @@ public class ExcelSheet implements Iterable<ExcelRow>
 		mySheet      = null;
 		rows         = Collections.emptyList();
 		columns      = Collections.emptyList();
-		validRows    = new NumberRange(0,0);
-		validColumns = validRows;				
+		maxRows      = 0;
+		maxColumns   = 0;
 	}
 
 	public static ExcelSheet NULL_SHEET() {
@@ -63,11 +61,11 @@ public class ExcelSheet implements Iterable<ExcelRow>
 	}
 			
 	public int getRowsAmount(){
-		return validRows.getMaximumInteger();
+		return maxRows;
 	}
 	
 	public int getColumnsAmount(){
-		return validColumns.getMaximumInteger();
+		return maxColumns;
 	}
 
 	public Iterator<ExcelRow> iterator() {
