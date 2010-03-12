@@ -11,34 +11,35 @@ import com.google.common.collect.AbstractIterator;
 
 public class ColumnIterable implements Iterable<ExcelColumn> {
 
-	private final Sheet sheet;
+    private final Sheet sheet;
 
-	public ColumnIterable(Sheet mySheet) {
-		this.sheet = mySheet;
-	}
+    public ColumnIterable(Sheet mySheet) {
+        this.sheet = mySheet;
+    }
 
-	@Override
-	public Iterator<ExcelColumn> iterator() {
-		return new ColumnIterator(sheet);
-	}
+    @Override
+    public Iterator<ExcelColumn> iterator() {
+        return new ColumnIterator(sheet);
+    }
 
-	private static class ColumnIterator extends AbstractIterator<ExcelColumn> {
-		private final Sheet sheet;
-		private final int maxColumn;
-		private AtomicInteger index;
+    private static class ColumnIterator extends AbstractIterator<ExcelColumn> {
 
-		public ColumnIterator(Sheet mySheet) {
-			this.sheet = mySheet;
-			maxColumn = mySheet.getColumns();
-			index = new AtomicInteger();
-		}
+        private final Sheet sheet;
+        private final int maxColumn;
+        private AtomicInteger index;
 
-		@Override
-		protected ExcelColumn computeNext() {
-			if (maxColumn == index.get()) {
-				endOfData();
-			}
-			return new ExcelColumn(sheet, index.getAndIncrement());
-		}
-	}
+        public ColumnIterator(Sheet mySheet) {
+            this.sheet = mySheet;
+            maxColumn = mySheet.getColumns();
+            index = new AtomicInteger();
+        }
+
+        @Override
+        protected ExcelColumn computeNext() {
+            if (maxColumn == index.get()) {
+                endOfData();
+            }
+            return new ExcelColumn(sheet, index.getAndIncrement());
+        }
+    }
 }

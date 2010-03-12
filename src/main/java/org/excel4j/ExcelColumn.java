@@ -10,27 +10,35 @@ import jxl.Cell;
 import jxl.Sheet;
 
 public class ExcelColumn {
-	private final Sheet sheet;
-	private final int column;
 
-	public ExcelColumn(Sheet sheet, int column) {
-		Validate.notNull(sheet);
-		this.sheet = sheet;
-		this.column = column;
-	}
+    private final Sheet sheet;
+    private final int column;
+    private String toString;
+    
+    public ExcelColumn(Sheet sheet, int column) {
+        Validate.notNull(sheet);
+        this.sheet = sheet;
+        this.column = column;
+    }
 
-	public String getRow(int row) {
-		return sheet.getCell(column, row).getContents();
-	}
+    public String getRow(int row) {
+        return sheet.getCell(column, row).getContents();
+    }
 
-	public String toString() {
-		Cell rows[] = sheet.getColumn(column);
-		List<String> contents = Lists.newArrayListWithExpectedSize(sheet
-				.getRows());
-		for (Cell cell : rows) {
-			contents.add(cell.getContents());
-		}
-		return contents.toString();
-	}
+    @Override
+    public String toString() {
+        if(toString != null){
+            calculateToString();
+        }
+        return toString;
+    }
 
+    private void calculateToString() {
+        Cell rows[] = sheet.getColumn(column);
+        List<String> contents = Lists.newArrayListWithExpectedSize(sheet.getRows());
+        for (Cell cell : rows) {
+            contents.add(cell.getContents());
+        }
+        toString = contents.toString();
+    }
 }
