@@ -17,6 +17,7 @@ public class ExcelColumn {
     
     public ExcelColumn(Sheet sheet, int column) {
         Validate.notNull(sheet);
+        Validate.isTrue(column > -1);
         this.sheet = sheet;
         this.column = column;
     }

@@ -35,7 +35,8 @@ public class ExcelRow {
 
     private void computeToString() {
         Cell columns[] = sheet.getRow(row);
-        List<String> contents = Lists.newArrayListWithExpectedSize(sheet.getColumns());
+        List<String> contents = Lists.newArrayListWithExpectedSize(sheet.
+                getColumns());
         for (Cell cell : columns) {
             contents.add(cell.getContents());
         }
@@ -57,18 +58,20 @@ public class ExcelRow {
     }
 
     public String getColumn(String colum) {
-        return sheet.getCell(CellReferenceHelper.getColumn(colum + row), row).getContents();
+        return sheet.getCell(CellReferenceHelper.getColumn(colum + row), row).
+                getContents();
     }
 
     public <T> T getColumn(String colum, Transformer<T> trans) {
         return trans.transform(getColumn(colum));
     }
 
+    @Override
     public String toString() {
         if (toString == null) {
             computeToString();
         }
-        return toString();
+        return toString;
     }
 
     private static final class NullExcelRow extends ExcelRow {
